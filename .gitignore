@@ -1,0 +1,4 @@
+.vscode/
+node_modules
+/src/scripts/client_secret.json
+/src/scripts/youtube-nodejs-quickstart.json
