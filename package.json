@@ -2,7 +2,15 @@
   "name": "nbaaay",
   "version": "0.0.1",
   "description": "Awesome project developed with TypeORM.",
-  "devDependencies": {
+  "devDependencies": {},
+  "dependencies": {
+    "axios": "^0.17.1",
+    "moment-timezone": "^0.5.14",
+    "pg": "^7.3.0",
+    "pm2": "^2.9.3",
+    "reflect-metadata": "^0.1.10",
+    "snoowrap": "^1.15.2",
+    "typeorm": "0.1.11",
     "@types/es6-shim": "^0.31.35",
     "@types/node": "^8.0.29",
     "express": "^4.16.2",
@@ -15,14 +23,6 @@
     "p-iteration": "^1.1.5",
     "ts-node": "3.3.0",
     "typescript": "2.5.2"
-  },
-  "dependencies": {
-    "axios": "^0.17.1",
-    "moment-timezone": "^0.5.14",
-    "pg": "^7.3.0",
-    "reflect-metadata": "^0.1.10",
-    "snoowrap": "^1.15.2",
-    "typeorm": "0.1.11"
   },
   "scripts": {
     "start": "ts-node src/index.ts",

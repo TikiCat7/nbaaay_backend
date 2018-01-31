@@ -13,7 +13,30 @@ import { Test } from './entity/Test';
 const moment = require('moment');
 
 // create typeorm connection
-createConnection().then(connection => {
+createConnection({
+    "type": "postgres",
+    "host": process.env.POSTGRES_HOST,
+    "port": 5432,
+    "username": process.env.POSTGRES_USERNAME,
+    "password": process.env.POSTGRES_PASSWORD,
+    "database": process.env.POSTGRES_DATABASE_NAME,
+    "synchronize": true,
+    "logging": false,
+    "entities": [
+      __dirname + '/entity/**.ts'
+    ],
+    "migrations": [
+      __dirname + '/migration/**.ts'
+    ],
+    "subscribers": [
+      __dirname + '/subscriber/**.ts'
+    ],
+    "cli": {
+       "entitiesDir": "src/entity",
+       "migrationsDir": "src/migration",
+       "subscribersDir": "src/subscriber"
+    }
+}).then(connection => {
   const matchRepositiory = connection.getRepository(Match);
   const threadRepository = connection.getRepository(Thread);
   const postgamethreadRepository = connection.getRepository(PostGameThread);

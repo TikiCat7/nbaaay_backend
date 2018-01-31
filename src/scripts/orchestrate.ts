@@ -79,8 +79,29 @@ async function mainLoop(connection, dateFormatted, dateFormattedYesterday, date)
     resolve();
   })
 }
-
-createConnection().then(async connection => {
+createConnection({
+  "type": "postgres",
+  "host": process.env.POSTGRES_HOST,
+  "port": 5432,
+  "username": process.env.POSTGRES_USERNAME,
+  "password": process.env.POSTGRES_PASSWORD,
+  "database": process.env.POSTGRES_DATABASE_NAME,
+  "synchronize": true,
+  "logging": false,
+  "entities": [
+    __dirname + '/../entity/**.ts'
+  ],
+  "migrations": [
+    __dirname + '/../migration/**.ts'
+  ],
+  "subscribers": [
+    __dirname + '/../subscriber/**.ts'
+  ],
+  "cli": {
+     "entitiesDir": "src/entity",
+     "migrationsDir": "src/migration",
+     "subscribersDir": "src/subscriber"
+  }}).then(async connection => {
   // grab todays games and continue to update
   const todayDate = moment().subtract(1, 'd').format('YYYYMMDD');
   const yesterdayDate = moment().subtract(2, 'd').format('YYYYMMDD');

@@ -13,8 +13,7 @@ const TOKEN_PATH = TOKEN_DIR + '/youtube-nodejs-quickstart.json';
 async function videoFromChannel(channelId, query, gameStartTime) {
   return new Promise(async (resolve, reject) => {
     try {
-      const content = await fs.readFileSync(path.join(__dirname, 'client_secret.json'));
-      const auth = await authorize(JSON.parse(content));
+      const auth = await authorize();
       const videos = await searchChannel(auth, channelId, query, gameStartTime);
 
       console.log('got response from youtube');
@@ -34,11 +33,11 @@ async function videoFromChannel(channelId, query, gameStartTime) {
  * @param {Object} credentials The authorization client credentials.
  * @param {function} callback The callback to call with the authorized client.
  */
-function authorize(credentials) {
+function authorize() {
   return new Promise((resolve, reject) => {
-    const clientSecret = credentials.installed.client_secret;
-    const clientId = credentials.installed.client_id;
-    const redirectUrl = credentials.installed.redirect_uris[0];
+    const clientSecret = process.env.YOUTUBE_API_CLIENT_SECRET;
+    const clientId = process.env.YOUTUBE_API_CLIENT_ID;
+    const redirectUrl = process.env.YOUTUBE_API_REDIRECT_URI;
     const auth = new googleAuth();
     const oauth2Client = new auth.OAuth2(clientId, clientSecret, redirectUrl);
 
@@ -46,7 +45,7 @@ function authorize(credentials) {
     fs.readFile(TOKEN_PATH, function(err, token) {
       if (err) {
         console.log(err);
-        getNewToken(oauth2Client);
+        getNewToken(oauth2Client, () => resolve(oauth2Client));
       } else {
         oauth2Client.credentials = JSON.parse(token);
         resolve(oauth2Client);

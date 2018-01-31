@@ -95,7 +95,7 @@ async function saveAndUpdateStreamables(formattedStremables, streamableRepositor
         // console.log(streamable.post);
         let streamableToSave = new Streamable();
         // TO DO figure out what match this streamable is from...
-        streamableToSave.matchId = '21';
+        streamableToSave.matchId = process.env.NBAAAY_START_ID || '1';
         streamableToSave.author = await streamable.post.author.name;
         streamableToSave.created = streamable.post.created_utc;
         streamableToSave.createdISODate = moment(streamable.post.created_utc, 'X').toDate();
