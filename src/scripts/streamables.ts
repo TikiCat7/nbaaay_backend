@@ -84,8 +84,8 @@ async function saveAndUpdateStreamables(formattedStremables, streamableRepositor
       if (existingStreamable) {
         // stremable already exists in DB, update it
         console.log(`streamable already exists, going to update it : ${streamable.post.title}...`);
-        existingStreamable.score = streamable.post.score;
-        existingStreamable.numComments = streamable.post.num_comments;
+        existingStreamable.score = parseInt(streamable.post.score);
+        existingStreamable.numComments = parseInt(streamable.post.num_comments);
         existingStreamable.fullCommentsFromReddit = streamable.fullComments;
         existingStreamable.topComments = streamable.topComments;
         await streamableRepository.save(existingStreamable);
@@ -101,8 +101,8 @@ async function saveAndUpdateStreamables(formattedStremables, streamableRepositor
         streamableToSave.createdISODate = moment(streamable.post.created_utc, 'X').toDate();
         streamableToSave.url = streamable.post.url;
         streamableToSave.title = streamable.post.title;
-        streamableToSave.score = streamable.post.score;
-        streamableToSave.numComments = streamable.post.num_comments;
+        streamableToSave.score = parseInt(streamable.post.score);
+        streamableToSave.numComments = parseInt(streamable.post.num_comments);
         streamableToSave.postId = streamable.post.id;
         streamableToSave.fullCommentsFromReddit = streamable.fullComments;
         streamableToSave.topComments = streamable.topComments;

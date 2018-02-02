@@ -22,11 +22,11 @@ export class Streamable {
     @Column()
     postId: string;
 
-    @Column()
-    numComments: string;
+    @Column('int')
+    numComments: number;
 
-    @Column()
-    score: string;
+    @Column('int')
+    score: number;
 
     @Column()
     author: string;

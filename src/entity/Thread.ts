@@ -12,14 +12,14 @@ export class Thread {
     @Column()
     created: string;
 
-    @Column()
-    ups: string;
+    @Column('int')
+    ups: number;
 
-    @Column()
-    down: string;
+    @Column('int')
+    down: number;
 
-    @Column()
-    score: string;
+    @Column('int')
+    score: number;
 
     @Column({ unique: true })
     matchId: string;
@@ -30,8 +30,8 @@ export class Thread {
     @Column()
     title: string;
 
-    @Column()
-    numComments: string;
+    @Column('int')
+    numComments: number;
 
     @Column()
     postId: string;
