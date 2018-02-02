@@ -147,7 +147,7 @@ async function determineVideoTypeFromTitle(title: String, playerRepository) {
     let player = await playerRepository.find({ where: {name: name}});
 
       if (player.length === 1) {
-        type = `interview identified`;
+        type = `interview ${name}`;
         playerId = player[0].id;
       } else {
         type = 'interview unidentified';
@@ -165,7 +165,7 @@ async function determineVideoTypeFromTitle(title: String, playerRepository) {
       let player = await playerRepository.find({ where: {name: name}});
 
       if (player.length === 1) {
-        type = `player highlights identified`;
+        type = `player highlights ${name}`;
         playerId = player[0].id;
       } else {
         type = 'player highlights unidentified';
