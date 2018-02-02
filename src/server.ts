@@ -143,6 +143,7 @@ createConnection({
         .where("youtubevideos.publishedAt > :startDate", {startDate})
         .andWhere("youtubevideos.publishedAt < :endDate", {endDate})
         .leftJoinAndSelect("youtubevideos.player", 'player')
+        .leftJoinAndSelect("youtubevideos.match", 'match')
         .getMany();
 
       res.send(youtubevideos);
