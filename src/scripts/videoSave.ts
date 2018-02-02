@@ -40,6 +40,14 @@ const TRI_CODE_TO_TEAM_NAME = {
   'WAS': 'Washington Wizards'
 }
 
+function matchNotFresh(endTimeUTC) {
+  let now = moment(new Date()); //todays date
+  let end = moment(endTimeUTC); // another date
+  let duration = moment.duration(now.diff(end));
+  let hours = duration.asHours();
+  return hours > 10;
+}
+
 async function findAndSaveYoutubeVideos(matchRepository, youtubeVideoRepository, playerRepository, dateFormatted: String, channelId: String) {
   return new Promise(async (resolve, reject) => {
     try {
@@ -48,7 +56,10 @@ async function findAndSaveYoutubeVideos(matchRepository, youtubeVideoRepository,
       const todaysMatches = await matchRepository.find({ where: { startDateEastern: dateFormatted }});
       console.log(`found ${todaysMatches.length} matches.`);
       await forEachSeries(todaysMatches, async(match) => {
-        if (match.statusNum !== 1) {
+        if(match.statusNum === 3 && matchNotFresh(match.endTimeUTC)) {
+          console.log('match is finished and 10+ hours since ended, dont search for videos');
+        }
+        else if (match.statusNum === 2) {
           console.log('ready to look for videos, match is active');
           console.log(TRI_CODE_TO_TEAM_NAME[match.hTeamTriCode], TRI_CODE_TO_TEAM_NAME[match.vTeamTriCode]);
           const videos = await videoFromChannel(channelId, `${TRI_CODE_TO_TEAM_NAME[match.hTeamTriCode]} | ${TRI_CODE_TO_TEAM_NAME[match.vTeamTriCode]}`, moment(match.startTimeUTCString).toISOString());

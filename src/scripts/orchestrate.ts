@@ -58,19 +58,19 @@ async function mainLoop(connection, dateFormatted, dateFormattedYesterday, date)
     // YOUTUBE VIDEOS
 
     // MLG Highlights
-    await findAndSaveYoutubeVideos(matchRepository, youtubeVideoRepository, playerRepository, dateFormatted, 'UCoh_z6QB0AGB1oxWufvbDUg');
+    // await findAndSaveYoutubeVideos(matchRepository, youtubeVideoRepository, playerRepository, dateFormatted, 'UCoh_z6QB0AGB1oxWufvbDUg');
     // Ximo Pierto
-    await findAndSaveYoutubeVideos(matchRepository, youtubeVideoRepository, playerRepository, dateFormatted, 'UCcuuNqCH-CiHbvXihwTOGrA');
+    // await findAndSaveYoutubeVideos(matchRepository, youtubeVideoRepository, playerRepository, dateFormatted, 'UCcuuNqCH-CiHbvXihwTOGrA');
     // Ximo Highlights
-    await findAndSaveYoutubeVideos(matchRepository, youtubeVideoRepository, playerRepository, dateFormatted, 'UCawKxKSbK4S3RQArUJHWb6w');
+    // await findAndSaveYoutubeVideos(matchRepository, youtubeVideoRepository, playerRepository, dateFormatted, 'UCawKxKSbK4S3RQArUJHWb6w');
     // GD's Lastest Highlights
-    await findAndSaveYoutubeVideos(matchRepository, youtubeVideoRepository, playerRepository, dateFormatted, 'UCd_EkHbEutirFl_XSrg95kA');
+    // await findAndSaveYoutubeVideos(matchRepository, youtubeVideoRepository, playerRepository, dateFormatted, 'UCd_EkHbEutirFl_XSrg95kA');
     // House of highlights
-    await findAndSaveYoutubeVideos(matchRepository, youtubeVideoRepository, playerRepository, dateFormatted, 'UCqQo7ewe87aYAe7ub5UqXMw');
+    // await findAndSaveYoutubeVideos(matchRepository, youtubeVideoRepository, playerRepository, dateFormatted, 'UCqQo7ewe87aYAe7ub5UqXMw');
     // Free dawkins
-    await findAndSaveYoutubeVideos(matchRepository, youtubeVideoRepository, playerRepository, dateFormatted, 'UCEjOSbbaOfgnfRODEEMYlCw');
+    // await findAndSaveYoutubeVideos(matchRepository, youtubeVideoRepository, playerRepository, dateFormatted, 'UCEjOSbbaOfgnfRODEEMYlCw');
     // Rapid Hihglights
-    await findAndSaveYoutubeVideos(matchRepository, youtubeVideoRepository, playerRepository, dateFormatted, 'UCdxB6UoY7VggXoaOSvEhSjg');
+    // await findAndSaveYoutubeVideos(matchRepository, youtubeVideoRepository, playerRepository, dateFormatted, 'UCdxB6UoY7VggXoaOSvEhSjg');
 
     // STREAMABLES
     const streamables = await findStreamablePosts(date, r);

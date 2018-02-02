@@ -15,7 +15,14 @@ module.exports = {
   {
     name: 'nbaaay_scraper',
     script: 'src/scripts/orchestrate.ts',
-    cron_restart: "*/3 * * * *",
+    cron_restart: "*/2 * * * *",
+    // log_file: "logs/pm2_child.log",
+    error_file: "logs/pm2_error.log",
+  },
+  {
+    name: 'nbaaay_youtube_update',
+    script: 'src/scripts/youtubeUpdate.ts',
+    cron_restart: "*/5 * * * *",
     // log_file: "logs/pm2_child.log",
     error_file: "logs/pm2_error.log",
   }],
