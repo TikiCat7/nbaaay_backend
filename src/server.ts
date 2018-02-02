@@ -142,6 +142,7 @@ createConnection({
       const youtubevideos = await youtubeVideoRepository.createQueryBuilder("youtubevideos")
         .where("youtubevideos.publishedAt > :startDate", {startDate})
         .andWhere("youtubevideos.publishedAt < :endDate", {endDate})
+        .leftJoinAndSelect("youtubevideos.player", 'player')
         .getMany();
 
       res.send(youtubevideos);
