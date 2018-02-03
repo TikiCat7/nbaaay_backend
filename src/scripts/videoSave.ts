@@ -45,7 +45,7 @@ function matchNotFresh(endTimeUTC) {
   let end = moment(endTimeUTC); // another date
   let duration = moment.duration(now.diff(end));
   let hours = duration.asHours();
-  return hours > 10;
+  return hours > 7;
 }
 
 async function findAndSaveYoutubeVideos(matchRepository, youtubeVideoRepository, playerRepository, dateFormatted: String, channelId: String) {
