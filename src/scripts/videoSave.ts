@@ -1,7 +1,6 @@
 const { forEachSeries } = require('p-iteration');
 import {videoFromChannel} from './youtube';
 import {YoutubeVideo} from "../entity/YoutubeVideo";
-const moment = require('moment');
 
 // 1. grab list of todays matches
 // 2. for each one make a search against the primary highlight channels using the match name and game start time
@@ -41,11 +40,15 @@ const TRI_CODE_TO_TEAM_NAME = {
 }
 
 function matchNotFresh(endTimeUTC) {
-  let now = moment(new Date()); //todays date
-  let end = moment(endTimeUTC); // another date
+  // Average UTC time in US
+  let now = moment().subtract(6.5, 'hours');
+  // server time is UTC +0 hours
+  let end = moment(endTimeUTC);
+  // Time since game end
   let duration = moment.duration(now.diff(end));
   let hours = duration.asHours();
-  return hours > 7;
+  console.log(`Time since match ended: ${hours}`);
+  return hours > 8;
 }
 
 async function findAndSaveYoutubeVideos(matchRepository, youtubeVideoRepository, playerRepository, dateFormatted: String, channelId: String) {
@@ -59,7 +62,7 @@ async function findAndSaveYoutubeVideos(matchRepository, youtubeVideoRepository,
         if(match.statusNum === 3 && matchNotFresh(match.endTimeUTC)) {
           console.log('match is finished and 10+ hours since ended, dont search for videos');
         } else  if(match.statusNum === 3 && !matchNotFresh(match.endTimeUTC)) {
-          console.log('ready to look for videos, match is over but < 10 hours since it ended');
+          console.log('ready to look for videos, match is over but < 8 hours since it ended');
           console.log(TRI_CODE_TO_TEAM_NAME[match.hTeamTriCode], TRI_CODE_TO_TEAM_NAME[match.vTeamTriCode]);
           const videos = await videoFromChannel(channelId, `${TRI_CODE_TO_TEAM_NAME[match.hTeamTriCode]} | ${TRI_CODE_TO_TEAM_NAME[match.vTeamTriCode]}`, moment(match.startTimeUTCString).toISOString());
 
@@ -221,8 +224,8 @@ async function determineVideoTypeFromTitle(title: String, playerRepository) {
 
       // determine id of both players in the duel
       // CARE THIS IS VERY SPECIFIC, COULD BREAK EASILY BASED ON YOUTUBE TITLE
-      let player1Name = title.split("&")[0].slice(0, -1);;
-      let player2Name = title.split("&")[1].split(" ")[1] + " " +title.split("vs")[1].split(" ")[2];
+      let player1Name = title.split("&")[0].slice(0, -1);
+      let player2Name = title.split("&")[1].split(" ")[1] + " " + title.split("&")[1].split(" ")[2] ;
 
       let player1 = await playerRepository.find({ where: {name: player1Name}});
       let player2 = await playerRepository.find({ where: {name: player2Name}});

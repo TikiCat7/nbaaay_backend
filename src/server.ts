@@ -144,6 +144,7 @@ createConnection({
         .andWhere("youtubevideos.publishedAt < :endDate", {endDate})
         .leftJoinAndSelect("youtubevideos.player", 'player')
         .leftJoinAndSelect("youtubevideos.match", 'match')
+        .orderBy('youtubevideos.id', 'DESC')
         .getMany();
 
       res.send(youtubevideos);
