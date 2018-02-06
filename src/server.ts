@@ -99,7 +99,7 @@ createConnection({
       let todayDate = moment().startOf('day').utc();
       console.log(todayDate);
       let matches = await matchRepositiory.createQueryBuilder("match")
-        .where("match.startTimeUTC > :todayDate", { todayDate })
+        .where("match.startTimeUTC >= :todayDate", { todayDate })
         .leftJoinAndSelect("match.youtubevideos", 'video')
         .leftJoinAndSelect("match.thread", "thread")
         // .addSelect('thread.fullCommentsFromReddit')

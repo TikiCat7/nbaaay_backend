@@ -1,6 +1,7 @@
 const { forEachSeries } = require('p-iteration');
 import {videoFromChannel} from './youtube';
 import {YoutubeVideo} from "../entity/YoutubeVideo";
+const moment = require('moment');
 
 // 1. grab list of todays matches
 // 2. for each one make a search against the primary highlight channels using the match name and game start time
