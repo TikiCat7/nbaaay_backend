@@ -89,8 +89,18 @@ createConnection({
 
   app.get("/match/:id", async function(req: Request, res: Response) {
     console.log(`recieved request for /match/${req.params.id}`);
-    const match = await matchRepositiory.find({ where: { matchId: req.params.id }, relations: ["thread", "postGameThread", "youtubevideos"]});
-    res.send(match);
+    let matchId = req.params.id;
+    let match = await matchRepositiory.createQueryBuilder("match")
+        .where("match.matchId = :matchId", { matchId })
+        .leftJoinAndSelect("match.youtubevideos", 'video')
+        .leftJoinAndSelect("match.thread", "thread")
+        .leftJoinAndSelect("video.player", 'player')
+        // .addSelect('thread.fullCommentsFromReddit')
+        // .addSelect('thread.topComments')
+        .leftJoinAndSelect("match.postGameThread", "postGameThread")
+        .getOne();
+
+      res.send(match);
   });
 
   app.get("/todayMatches", async function(req: Request, res: Response) {
