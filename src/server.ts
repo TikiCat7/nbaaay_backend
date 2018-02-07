@@ -165,9 +165,25 @@ createConnection({
   });
 
   app.get("/streamable/:id", async function(req: Request, res: Response) {
-    console.log(`recieved request for streamable ${req.params.id}`);
-    const streamable = await streamableRepository.find({where: {postId: req.params.id}});
-    res.send(streamable);
+    let id = req.params.id;
+    let streamable;
+    try {
+      if(req.query.includeComments === 'true') {
+        streamable = await streamableRepository.createQueryBuilder("streamable")
+          .where("streamable.id = :id", { id })
+          .addSelect('streamable.fullCommentsFromReddit')
+          .addSelect('streamable.topComments')
+          .getOne();
+      } else {
+        streamable = await streamableRepository.createQueryBuilder("streamable")
+          .where("streamable.id = :id", { id })
+          .getOne();
+      }
+      res.send(streamable);
+    } catch(error) {
+      console.log(error);
+      res.send(error);
+    }
   });
 
   app.get("/streamables/:date", async function(req: Request, res: Response) {
