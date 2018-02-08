@@ -31,7 +31,7 @@ export class Streamable {
     @Column()
     author: string;
 
-    @Column({ unique: true })
+    @Column()
     url: string;
 
     @Column('jsonb', {select: false})
