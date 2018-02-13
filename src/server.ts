@@ -236,6 +236,21 @@ createConnection({
     }
   });
 
+  app.get("/playerlist", async function(req: Request, res: Response) {
+    try {
+      console.log(`got request for all players`);
+      const players = await connection
+      .getRepository(Player)
+      .createQueryBuilder("player")
+      .getMany();
+
+      res.send(players);
+    } catch(error) {
+      console.log(error);
+      res.send(error);
+    }
+  })
+
   // start express server
   app.listen(3000);
 });
