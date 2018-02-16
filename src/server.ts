@@ -76,6 +76,8 @@ createConnection({
         .addSelect('thread.fullCommentsFromReddit')
         .addSelect('thread.topComments')
         .leftJoinAndSelect("match.postGameThread", "postGameThread")
+        .addSelect('postGameThread.fullCommentsFromReddit')
+        .addSelect('postGameThread.topComments')
         .getMany();
       } else {
         matches = await matchRepositiory.find({ where: {startDateEastern: req.params.date}, relations: ["thread","postGameThread", "youtubevideos"]});

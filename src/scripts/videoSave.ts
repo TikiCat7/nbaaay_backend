@@ -42,7 +42,7 @@ const TRI_CODE_TO_TEAM_NAME = {
 
 function matchNotFresh(endTimeUTC) {
   // Average UTC time in US
-  let now = moment().subtract(6.5, 'hours');
+  let now = moment().subtract('hours');
   // server time is UTC +0 hours
   let end = moment(endTimeUTC);
   // Time since game end
