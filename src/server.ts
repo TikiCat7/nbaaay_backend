@@ -205,10 +205,10 @@ createConnection({
     }
   });
 
-  app.get("/streamables/recent", async function (req: Request, res: Response) {
+  app.get("/streamablesrecent", async function (req: Request, res: Response) {
     try {
       console.log(`recieved request for streamables in last 24 hours`);
-      const requestDate = moment().subtract(24,'hours').unix();
+      const requestDate = moment().subtract(24, 'hours').unix()
       const requestEndDate = moment().unix();
       console.log(requestDate);
       const streamable = await streamableRepository.createQueryBuilder("streamable")
