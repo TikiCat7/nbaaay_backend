@@ -26,7 +26,8 @@
   "scripts": {
     "start": "ts-node src/index.ts",
     "server": "ts-node src/server.ts",
-    "script": "ts-node src/scripts/orchestrate.ts"
+    "script": "ts-node src/scripts/orchestrate.ts",
+    "dailyMatchUpdate": "ts-node src/scripts/dailyMatchUpdate.ts"
   },
   "main": "server.ts",
   "author": "Wataru Kay",

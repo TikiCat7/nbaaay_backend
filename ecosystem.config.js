@@ -8,7 +8,8 @@ const postDeployProduction = () => {
 }
 
 module.exports = {
-  apps: [{
+  apps: [
+  {
     name: 'nbaaay_API',
     script: './src/server.ts'
   },
@@ -25,7 +26,15 @@ module.exports = {
     cron_restart: "*/5 * * * *",
     // log_file: "logs/pm2_child.log",
     error_file: "logs/pm2_error.log",
-  }],
+  },
+  {
+    // run once a day to update the team records for upcoming matches (otherwise the team records are stuck from the day all matches were fetched)
+    name: 'nbaaay_daily_match_update',
+    script: 'src/scripts/dailyMatchUpdate.ts',
+    cron_restart: "20 2 * * *",
+    error_file: "logs/pm2_error.log",
+  }
+  ],
   deploy: {
     production: {
       user: 'ubuntu',
