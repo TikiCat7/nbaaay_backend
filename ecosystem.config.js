@@ -3,7 +3,7 @@ const postDeployProduction = () => {
   return [
     'npm install',
     './node_modules/.bin/pm2 install typescript',
-    'pm2 startOrRestart ecosystem.config.js',
+    'pm2 startOrRestart ecosystem.config.js --log-date-format "DD-MM HH:mm:ss.SSS"',
   ].join(" && ");
 }
 
