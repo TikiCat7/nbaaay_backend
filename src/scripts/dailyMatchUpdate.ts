@@ -51,8 +51,8 @@ async function grabAllMatches(connection) {
   const matchRepository = connection.getRepository(Match);
   const sleep = msec => new Promise(resolve => setTimeout(resolve, msec));
   let x = 0;
-  for (x; x < 177; x++) {
-    const dateFormatted = moment('2017-10-17').add(x, 'd').format('YYYYMMDD');
+  for (x; x < 45; x++) {
+    const dateFormatted = moment('2018-02-26').add(x, 'd').format('YYYYMMDD');
     const todaysMatches = await findTodayMatches(dateFormatted);
     await saveMatchesOrUpdate(todaysMatches, matchRepository);
     console.log(`found ${todaysMatches.length} games`);
