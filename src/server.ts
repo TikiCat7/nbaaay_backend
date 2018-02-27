@@ -128,14 +128,50 @@ createConnection({
 
   app.get("/thread/:id", async function(req: Request, res: Response) {
     console.log(`recieved request for /thread/${req.params.id}`);
-    const thread = await threadRepository.find({ where: { postId: req.params.id }});
-    res.send(thread);
+    try {
+      let thread;
+      if (req.query.includeAllComments === 'true') {
+        thread = await threadRepository.createQueryBuilder("thread")
+          .where({ postId: req.params.id })
+          .addSelect('thread.fullCommentsFromReddit')
+          .addSelect('thread.topComments')
+          .getOne();
+      } else if (req.query.includeTopComments === 'true') {
+        thread = await threadRepository.createQueryBuilder("thread")
+          .where({ postId: req.params.id })
+          .addSelect('thread.topComments')
+          .getOne();
+      } else {
+        thread = await threadRepository.find({ where: { postId: req.params.id } });
+      }
+      res.send(thread);
+    } catch(error) {
+      res.send(error);
+    }
   });
 
-  app.get("/postgamethread/:id", async function(req: Request, res: Response) {
+  app.get("/postgamethread/:id", async function (req: Request, res: Response) {
     console.log(`recieved request for /postgamethread/${req.params.id}`);
-    const postgamethread = await postgamethreadRepository.find({ where: { postId: req.params.id}});
-    res.send(postgamethread);
+    try {
+      let postgamethread;
+      if (req.query.includeAllComments === 'true') {
+        postgamethread = await postgamethreadRepository.createQueryBuilder("thread")
+          .where({ postId: req.params.id })
+          .addSelect('thread.fullCommentsFromReddit')
+          .addSelect('thread.topComments')
+          .getOne();
+      } else if (req.query.includeTopComments === 'true') {
+        postgamethread = await postgamethreadRepository.createQueryBuilder("thread")
+          .where({ postId: req.params.id })
+          .addSelect('thread.topComments')
+          .getOne();
+      } else {
+        postgamethread = await postgamethreadRepository.find({ where: { postId: req.params.id } });
+      }
+      res.send(postgamethread);
+    } catch (error) {
+      res.send(error);
+    }
   });
 
   app.get("/youtubevideo/:id", async function(req: Request, res:Response) {
