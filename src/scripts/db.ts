@@ -21,6 +21,11 @@ async function saveMatchesOrUpdate(games, matchRepository) {
       existingMatch.hTeamLosses = game.hTeam.loss;
       existingMatch.vTeamWins = game.vTeam.win;
       existingMatch.vTeamLosses = game.vTeam.loss;
+      existingMatch.currentPeriod = game.period.current;
+      existingMatch.periodType = game.period.type;
+      existingMatch.maxRegular = game.period.maxRegular;
+      existingMatch.isHalfTime = game.period.isHalftime;
+      existingMatch.isEndOfPeriod = game.period.isEndOfPeriod;
 
       try {
         // update the match record
@@ -29,10 +34,21 @@ async function saveMatchesOrUpdate(games, matchRepository) {
         console.log(error);
       }
     } else if (existingMatch && existingMatch.statusNum === 3) {
+      console.log('----------------HERE------------------');
       existingMatch.endTimeUTC = game.endTimeUTC;
+      existingMatch.isGameActivated = game.isGameActivated;
+      console.log(game.hTeam.linescore);
+      console.log(game.vTeam.linescore);
+      console.log(game.period);
+      existingMatch.currentPeriod = game.period.current;
+      existingMatch.periodType = game.period.type;
+      existingMatch.maxRegular = game.period.maxRegular;
+      existingMatch.isHalfTime = game.period.isHalftime;
+      existingMatch.isEndOfPeriod = game.period.isEndOfPeriod;
       //if match already exists as status 3, game is over, dont do anything
       console.log('match exists and is already statusNum 3, so nothing to do');
       try {
+        console.log('here but not actually saving');
         await matchRepository.save(existingMatch);
       } catch(error) {
         console.log(error);
@@ -42,6 +58,8 @@ async function saveMatchesOrUpdate(games, matchRepository) {
     } else {
       console.log('match doesnt exist, creating new record now...');
       console.log(game.startTimeUTC);
+      console.log('----------------------------------');
+      console.log(game);
       const match = {
         matchId: game.gameId,
         startDateEastern: game.startDateEastern,
@@ -60,6 +78,11 @@ async function saveMatchesOrUpdate(games, matchRepository) {
         vTeamTriCode: game.vTeam.triCode,
         vTeamScore: game.vTeam.score,
         statusNum: game.statusNum,
+        currentPeriod: game.period.current,
+        periodType: game.period.type,
+        maxRegular: game.period.maxRegular,
+        isHalfTime: game.period.isHalftime,
+        isEndOfPeriod: game.period.isEndOfPeriod,
       };
       try {
         await matchRepository.save(match);

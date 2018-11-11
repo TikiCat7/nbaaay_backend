@@ -16,6 +16,7 @@ const teams = require('./scripts/teamId');
 const snoowrap = require('snoowrap');
 const { forEachSeries, forEach } = require('p-iteration');
 
+console.log(process.env);
 const r = new snoowrap({
   userAgent: `${process.env.REDDIT_USERNAME} test app from nodejs`,
   clientId: process.env.REDDIT_CLIENT_ID,
@@ -28,9 +29,9 @@ function mainLoop() {
   createConnection().then(async connection => {
     let matchRepository = await connection.getRepository(Match);
     let gameThreadRepository = await connection.getRepository(Thread);
-    let youtubeVideoRepository = connection.getRepository(YoutubeVideo);
-    let streamableRepository = connection.getRepository(Streamable);
-    let playerRepository = connection.getRepository(Player);
+    let youtubeVideoRepository = await connection.getRepository(YoutubeVideo);
+    let streamableRepository = await connection.getRepository(Streamable);
+    let playerRepository = await connection.getRepository(Player);
 
     const dateFormatted = moment().subtract(1, 'd').format('YYYYMMDD');
     const todaysMatches = await matchRepository.find({ where: { startDateEastern: dateFormatted }});

@@ -1,4 +1,4 @@
-import {Entity, PrimaryColumn, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn, OneToMany, CreateDateColumn} from "typeorm";
+import {Entity, PrimaryColumn, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn, OneToMany, CreateDateColumn, ObjectType} from "typeorm";
 import {Thread} from './Thread';
 import {PostGameThread} from './PostGameThread';
 import { YoutubeVideo } from "./YoutubeVideo";
@@ -62,6 +62,21 @@ export class Match {
 
     @Column('int')
     statusNum: number;
+
+    @Column({ nullable: true })
+    currentPeriod: number;
+
+    @Column({ nullable: true })
+    periodType: number;
+
+    @Column({ nullable: true })
+    maxRegular: number;
+
+    @Column({ nullable: true })
+    isHalfTime: Boolean;
+
+    @Column({ nullable: true })
+    isEndOfPeriod: Boolean;
 
     @OneToOne(type => Thread)
     @JoinColumn()
