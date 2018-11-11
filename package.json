@@ -21,12 +21,12 @@
     "npm": "^5.10.0",
     "p-iteration": "^1.1.7",
     "pg": "^7.6.1",
-    "pm2": "^2.10.4",
+    "pm2": "^3.2.2",
     "reflect-metadata": "^0.1.12",
     "snoowrap": "^1.15.2",
-    "ts-node": "7.0.1",
-    "typeorm": "0.1.11",
-    "typescript": "2.5.2"
+    "ts-node": "^7.0.1",
+    "typeorm": "^0.2.8",
+    "typescript": "^3.1.6"
   },
   "scripts": {
     "start": "ts-node src/index.ts",
