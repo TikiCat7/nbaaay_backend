@@ -73,10 +73,10 @@ export class Match {
     maxRegular: number;
 
     @Column({ nullable: true })
-    isHalfTime: Boolean;
+    isHalfTime: boolean;
 
     @Column({ nullable: true })
-    isEndOfPeriod: Boolean;
+    isEndOfPeriod: boolean;
 
     @OneToOne(type => Thread)
     @JoinColumn()
@@ -94,9 +94,9 @@ export class Match {
     @JoinColumn()
     matchStats: MatchStats;
 
-    @OneToMany(type => YoutubeVideo, youtubevideos => youtubevideos.match, { cascadeInsert: true, cascadeUpdate: true})
+    @OneToMany(type => YoutubeVideo, youtubevideos => youtubevideos.match, { cascade: true })
     youtubevideos: YoutubeVideo[];
 
-    @OneToMany(type => Streamable, streamables => streamables.match, { cascadeInsert: true, cascadeUpdate: true})
+    @OneToMany(type => Streamable, streamables => streamables.match, { cascade: true })
     streamables: Streamable[];
 }
