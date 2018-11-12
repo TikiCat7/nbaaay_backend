@@ -41,24 +41,24 @@ async function mainLoop(connection, dateFormatted, dateFormattedYesterday, date)
     // MATCHES / THREADS / POST GAME THREADS
     const todaysMatches = await findTodayMatches(dateFormatted);
     if (todaysMatches.length > 0) {
-      await matchStatCollector(todaysMatches, matchRepository);
-      // await saveMatchesOrUpdate(todaysMatches, matchRepository);
-      // console.log('match record save/update complete');
+      // await matchStatCollector(todaysMatches, matchRepository);
+      await saveMatchesOrUpdate(todaysMatches, matchRepository);
+      console.log('match record save/update complete');
 
-      // const { notStarted, active, over, overRecent } = await checkGameStatus(todaysMatches);
-      // console.log(notStarted.length, active.length, over.length, overRecent.length);
+      const { notStarted, active, over, overRecent } = await checkGameStatus(todaysMatches);
+      console.log(notStarted.length, active.length, over.length, overRecent.length);
 
-      // const gameThreadsToCreate = await findGameThreads(overRecent, matchRepository, date);
-      // if (gameThreadsToCreate.length > 0) {
-      //   await saveGameThreads(gameThreadsToCreate, matchRepository, threadRepository)
-      //   console.log('game thread save/update complete');
-      // }
+      const gameThreadsToCreate = await findGameThreads(overRecent, matchRepository, date);
+      if (gameThreadsToCreate.length > 0) {
+        await saveGameThreads(gameThreadsToCreate, matchRepository, threadRepository)
+        console.log('game thread save/update complete');
+      }
     }
-    // await findPostGameThreads(matchRepository, postGameThreadRepository);
+    await findPostGameThreads(matchRepository, postGameThreadRepository);
     // // STREAMABLES
-    // const streamables = await findStreamablePosts(date, r);
-    // const formattedStreamables = await formatStreamablePosts(streamables);
-    // await saveAndUpdateStreamables(formattedStreamables, streamableRepository, matchRepository);
+    const streamables = await findStreamablePosts(date, r);
+    const formattedStreamables = await formatStreamablePosts(streamables);
+    await saveAndUpdateStreamables(formattedStreamables, streamableRepository, matchRepository);
     resolve();
   })
 }
