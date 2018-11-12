@@ -64,6 +64,9 @@ export class Match {
     statusNum: number;
 
     @Column({ nullable: true })
+    gameClock: string;
+
+    @Column({ nullable: true })
     currentPeriod: number;
 
     @Column({ nullable: true })
@@ -94,9 +97,9 @@ export class Match {
     @JoinColumn()
     matchStats: MatchStats;
 
-    @OneToMany(type => YoutubeVideo, youtubevideos => youtubevideos.match, { cascade: true })
+    @OneToMany(type => YoutubeVideo, youtubevideos => youtubevideos.match, { cascadeInsert: true, cascadeUpdate: true})
     youtubevideos: YoutubeVideo[];
 
-    @OneToMany(type => Streamable, streamables => streamables.match, { cascade: true })
+    @OneToMany(type => Streamable, streamables => streamables.match, { cascadeInsert: true, cascadeUpdate: true})
     streamables: Streamable[];
 }

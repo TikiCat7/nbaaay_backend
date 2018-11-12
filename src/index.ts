@@ -29,9 +29,9 @@ function mainLoop() {
   createConnection().then(async connection => {
     let matchRepository = await connection.getRepository(Match);
     let gameThreadRepository = await connection.getRepository(Thread);
-    let youtubeVideoRepository = await connection.getRepository(YoutubeVideo);
-    let streamableRepository = await connection.getRepository(Streamable);
-    let playerRepository = await connection.getRepository(Player);
+    let youtubeVideoRepository = connection.getRepository(YoutubeVideo);
+    let streamableRepository = connection.getRepository(Streamable);
+    let playerRepository = connection.getRepository(Player);
 
     const dateFormatted = moment().subtract(1, 'd').format('YYYYMMDD');
     const todaysMatches = await matchRepository.find({ where: { startDateEastern: dateFormatted }});
