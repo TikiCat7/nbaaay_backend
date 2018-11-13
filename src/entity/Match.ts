@@ -81,6 +81,12 @@ export class Match {
     @Column({ nullable: true })
     isEndOfPeriod: boolean;
 
+    @Column({ nullable: true, type: 'json' })
+    hTeamQScore: any;
+
+    @Column({ nullable: true, type: 'json' })
+    vTeamQScore: any;
+
     @OneToOne(type => Thread)
     @JoinColumn()
     thread: Thread;

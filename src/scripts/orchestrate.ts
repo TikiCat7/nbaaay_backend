@@ -41,7 +41,7 @@ async function mainLoop(connection, dateFormatted, dateFormattedYesterday, date)
     // MATCHES / THREADS / POST GAME THREADS
     const todaysMatches = await findTodayMatches(dateFormatted);
     if (todaysMatches.length > 0) {
-      // await matchStatCollector(todaysMatches, matchRepository);
+      await matchStatCollector(todaysMatches, matchRepository);
       await saveMatchesOrUpdate(todaysMatches, matchRepository);
       console.log('match record save/update complete');
 
