@@ -1,4 +1,6 @@
 const { gql } = require('apollo-server');
+import GraphQLJSON from 'graphql-type-json';
+const teams = require('../scripts/teamId');
 
 // The GraphQL schema
 const typeDefs = gql`
@@ -21,20 +23,30 @@ const typeDefs = gql`
     startTimeUTCString: String
     startTimeUTC: String
     hTeamId: String
-    hTeamLosses: String
     hTeamTriCode: String
+    hTeamName: String
+    hTeamRecordFormatted: String
+    hTeamWins: String
+    hTeamLosses: String
     hTeamScore: String
+    hTeamQScore: JSON
     vTeamId: String
-    vTeamLosses: String
     vTeamTriCode: String
+    vTeamName: String
+    vTeamRecordFormatted: String
+    vTeamWins: String
+    vTeamLosses: String
     vTeamScore: String
+    vTeamQScore: JSON 
     youtubevideos: [Video]
+    matchStats: [MatchStat]
     statusNum: Int
     currentPeriod: Int
     periodType: Int
     maxRegular: Int
     isHalfTime: Boolean
     isEndOfPeriod: Boolean
+    gameClock: String
   }
 
   type Video {
@@ -72,6 +84,15 @@ const typeDefs = gql`
     youtubevideos: [Video]
   }
 
+  type MatchStat {
+    id: ID,
+    matchIdFull: String,
+    playerIdFull: String,
+    statsJSON: JSON,
+    player: Player,
+    match: [Match],
+  }
+
   type Mutation {
     "Update a match record"
     updateMatch(matchId: String): Match
@@ -86,8 +107,24 @@ const resolvers = {
       let match = await matchrepository
         .createQueryBuilder('match')
         .where({ matchId: matchId })
+        .leftJoinAndSelect('match.youtubevideos', 'video')
+        .leftJoinAndSelect('video.player', 'player')
+        .leftJoinAndSelect('match.matchStats', 'matchStat')
+        .leftJoinAndSelect('matchStat.player', 'playerForMatchStat')
         .getOne();
-      console.log(match);
+
+      // extra data manipulation for frontend
+      let hTeamRecordFormatted = match.hTeamWins + '-' + match.hTeamLosses;
+      let vTeamRecordFormatted = match.vTeamWins + '-' + match.vTeamLosses;
+
+      let hTeamName = teams.find(team => team.tri === match.hTeamTriCode);
+      let vTeamName = teams.find(team => team.tri === match.vTeamTriCode);
+
+      match.hTeamRecordFormatted = hTeamRecordFormatted;
+      match.vTeamRecordFormatted = vTeamRecordFormatted;
+      match.hTeamName = hTeamName.short;
+      match.vTeamName = vTeamName.short;
+
       return match;
     },
     matchByDate: async (_, { date }, { matchrepository }) => {
@@ -98,7 +135,22 @@ const resolvers = {
         .where({ startDateEastern: date })
         .leftJoinAndSelect('match.youtubevideos', 'video')
         .leftJoinAndSelect('video.player', 'player')
+        .leftJoinAndSelect('match.matchStats', 'matchStat')
+        .leftJoinAndSelect('matchStat.player', 'playerForMatchStat')
         .getMany();
+        for(let match of matches) {
+          // extra data manipulation for frontend
+          let hTeamRecordFormatted = match.hTeamWins + '-' + match.hTeamLosses;
+          let vTeamRecordFormatted = match.vTeamWins + '-' + match.vTeamLosses;
+
+          let hTeamName = teams.find(team => team.tri === match.hTeamTriCode);
+          let vTeamName = teams.find(team => team.tri === match.vTeamTriCode);
+
+          match.hTeamRecordFormatted = hTeamRecordFormatted;
+          match.vTeamRecordFormatted = vTeamRecordFormatted;
+          match.hTeamName = hTeamName.short;
+          match.vTeamName = vTeamName.short;
+        }
         console.log(matches);
       } catch(error) {
         return error;

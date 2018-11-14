@@ -3,7 +3,7 @@ import {Thread} from './Thread';
 import {PostGameThread} from './PostGameThread';
 import { YoutubeVideo } from "./YoutubeVideo";
 import { PBP } from "./PBP";
-import { MatchStats } from "./MatchStats";
+import { MatchStat } from "./MatchStat";
 import { Streamable } from "./Streamable";
 
 @Entity()
@@ -99,9 +99,8 @@ export class Match {
     @JoinColumn()
     pbp: PBP;
 
-    @OneToOne(type => MatchStats)
-    @JoinColumn()
-    matchStats: MatchStats;
+    @OneToMany(type => MatchStat, matchStats => matchStats.match, { cascadeInsert: true, cascadeUpdate: true})
+    matchStats: MatchStat[];
 
     @OneToMany(type => YoutubeVideo, youtubevideos => youtubevideos.match, { cascadeInsert: true, cascadeUpdate: true})
     youtubevideos: YoutubeVideo[];

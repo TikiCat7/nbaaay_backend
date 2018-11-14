@@ -126,7 +126,7 @@ async function analyzeVideoTitle(title, todaysMatches, teams) {
 async function grabPlayerNames(playerRepository) {
   console.log(teams.length);
   await forEachSeries(teams, async(team, i) => {
-    const FETCH_URL = `http://stats.nba.com/stats/commonteamroster?LeagueID=00&Season=2017-18&TeamID=${team.id}`;
+    const FETCH_URL = `http://stats.nba.com/stats/commonteamroster?LeagueID=00&Season=2018-19&TeamID=${team.id}`;
     console.log(FETCH_URL);
     const players = await axios.get(FETCH_URL).then(res => res.data.resultSets[0].rowSet);
 

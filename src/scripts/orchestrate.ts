@@ -7,6 +7,9 @@ import { YoutubeVideo } from "../entity/YoutubeVideo";
 import { Test } from '../entity/Test';
 import { Player } from '../entity/Player';
 import { Streamable } from '../entity/Streamable';
+import { MatchStat } from '../entity/MatchStat';
+import axios from 'axios';
+const teams = require('../scripts/teamId');
 const { findTodayMatches, checkGameStatus } = require('./nbaAPI');
 const { saveMatches, saveGameThreads, saveMatchesOrUpdate } = require('./db');
 const { findGameThreads, findPostGameThreads } = require('./reddit');
@@ -37,11 +40,13 @@ async function mainLoop(connection, dateFormatted, dateFormattedYesterday, date)
     const youtubeVideoRepository = connection.getRepository(YoutubeVideo);
     const playerRepository = connection.getRepository(Player);
     const streamableRepository = connection.getRepository(Streamable);
+    const matchStatRepository = connection.getRepository(MatchStat)
 
+    // await grabPlayerNames(playerRepository);
     // MATCHES / THREADS / POST GAME THREADS
     const todaysMatches = await findTodayMatches(dateFormatted);
     if (todaysMatches.length > 0) {
-      await matchStatCollector(todaysMatches, matchRepository);
+      await matchStatCollector(todaysMatches, matchRepository, matchStatRepository, playerRepository);
       await saveMatchesOrUpdate(todaysMatches, matchRepository);
       console.log('match record save/update complete');
 
@@ -55,7 +60,7 @@ async function mainLoop(connection, dateFormatted, dateFormattedYesterday, date)
       }
     }
     await findPostGameThreads(matchRepository, postGameThreadRepository);
-    // // STREAMABLES
+    //STREAMABLES
     const streamables = await findStreamablePosts(date, r);
     const formattedStreamables = await formatStreamablePosts(streamables);
     await saveAndUpdateStreamables(formattedStreamables, streamableRepository, matchRepository);
@@ -110,3 +115,58 @@ async function grabAllMatches(connection) {
   }
 }
 
+async function grabPlayerNames(playerRepository) {
+  console.log(teams.length);
+  const sleep = msec => new Promise(resolve => setTimeout(resolve, msec));
+  await forEachSeries(teams, async(team, i) => {
+    if(i == 30) {
+      await sleep(1000);
+      const FETCH_URL = `http://stats.nba.com/stats/commonteamroster?LeagueID=00&Season=2018-19&TeamID=${team.id}`;
+      console.log(FETCH_URL);
+      const players = await axios.get(FETCH_URL).then(res => res.data.resultSets[0].rowSet);
+      await forEachSeries(players, async(player, i) => {
+        try {
+          // let playerToSave = new Player()
+          let playerToSave = await playerRepository.find({where: { playerId: player[12]}})
+          console.log(playerToSave);
+          if(playerToSave.length === 1) {
+            playerToSave[0].name = player[3]
+            playerToSave[0].firstName = player[3].split(' ')[0];
+            playerToSave[0].lastName = player[3].split(' ')[1] ? player[3].split(' ')[1] : '';
+            playerToSave[0].number = player[4]
+            playerToSave[0].position = player[5];
+            playerToSave[0].height = player[6]
+            playerToSave[0].weight = player[7];
+            playerToSave[0].birthdate = player[8];
+            playerToSave[0].age = player[9];
+            playerToSave[0].playerId = player[12]
+            playerToSave[0].teamId = team.id;
+            playerToSave[0].teamName = team.name;
+            playerToSave[0].teamTriCode = team.tri;
+            console.log('Existing Player Updating', playerToSave);
+            await playerRepository.save(playerToSave);
+          } else {
+            let newPlayer = new Player();
+            newPlayer.name = player[3]
+            newPlayer.firstName = player[3].split(' ')[0];
+            newPlayer.lastName = player[3].split(' ')[1] ? player[3].split(' ')[1] : '';
+            newPlayer.number = player[4]
+            newPlayer.position = player[5];
+            newPlayer.height = player[6];
+            newPlayer.weight = player[7];
+            newPlayer.birthdate = player[8];
+            newPlayer.age = player[9];
+            newPlayer.playerId = player[12];
+            newPlayer.teamId = team.id;
+            newPlayer.teamName = team.name;
+            newPlayer.teamTriCode = team.tri;
+            console.log('New Player', newPlayer);
+            await playerRepository.save(newPlayer);
+          }
+        } catch(error) {
+          console.log(error);
+        }
+      });
+    }
+  });
+}

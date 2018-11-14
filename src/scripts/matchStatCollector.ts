@@ -1,29 +1,96 @@
 const axios = require('axios');
+const { forEachSeries } = require('p-iteration');
 
-async function matchStatCollector(games, matchRepository) {
-  for (const game of games) {
-    try {
-      let result = await axios.get(`https://nlnbamdnyc-a.akamaihd.net/fs/nba/feeds_s2012/stats/2018/boxscore/${game.gameId}.js`);
-      let statJSON = JSON.parse(result.data.split('var g_boxscore=')[1]);
-      const existingMatch = await matchRepository.findOne({where: {matchId: game.gameId}});
-      console.log(statJSON.score.home);
-      console.log(statJSON.score.visitor);
-      // update the game clock
-      existingMatch.gameClock = statJSON.score.periodTime.gameClock;
-      // update the match score
-      existingMatch.hTeamScore = statJSON.score.home.score;
-      existingMatch.vTeamScore = statJSON.score.visitor.score;
+async function matchStatCollector(
+  games,
+  matchRepository,
+  matchStatRepository,
+  playerRepository,
+) {
+  return new Promise(async (reolve, reject) => {
+    await forEachSeries(games, async game => {
+      try {
+        const existingMatch = await matchRepository.findOne({
+          where: { matchId: game.gameId },
+        });
+        console.log(existingMatch);
+        // if match exists and has started
+        if (existingMatch && existingMatch.statusNum !== 1) {
+          let result = await axios.get(
+            `https://nlnbamdnyc-a.akamaihd.net/fs/nba/feeds_s2012/stats/2018/boxscore/${
+              game.gameId
+            }.js`,
+          );
+          let statJSON = JSON.parse(result.data.split('var g_boxscore=')[1]);
+          console.log('game to be updated');
+          console.log(game.gameId);
+          let homeTeamStats = statJSON.stats.home.players;
+          let awayTeamStats = statJSON.stats.visitor.players;
+          await saveStats(
+            existingMatch,
+            homeTeamStats,
+            playerRepository,
+            matchStatRepository,
+          );
 
-      // update the quarter scores
-      existingMatch.hTeamQScore = statJSON.score.home.qScore;
-      existingMatch.vTeamQScore = statJSON.score.visitor.qScore;
-      await matchRepository.save(existingMatch);
-      console.log(`Updated game time for ${existingMatch.hTeamTriCode} vs ${existingMatch.vTeamTriCode}, Time: ${existingMatch.gameClock}`);
-    } catch(error) {
-      console.log('match didnt start probably');
-    }
-  }
-  console.log('Done updating time and stats');
+          existingMatch.gameClock = statJSON.score.periodTime.gameClock;
+          existingMatch.hTeamScore = statJSON.score.home.score;
+          existingMatch.vTeamScore = statJSON.score.visitor.score;
+
+          // update the quarter scores
+          existingMatch.hTeamQScore = statJSON.score.home.qScore;
+          existingMatch.vTeamQScore = statJSON.score.visitor.qScore;
+          await matchRepository.save(existingMatch);
+        }
+      } catch (error) {
+        console.log(error);
+        console.log('match didnt start probably');
+      }
+    });
+    console.log('done');
+    reolve();
+  });
 }
 
 export default matchStatCollector;
+
+async function saveStats(match, stats, playerRepository, matchStatRepository) {
+  return new Promise(async (resolve, reject) => {
+    await forEachSeries(stats, async stat => {
+      console.log(stats);
+      console.log(stat);
+      return new Promise(async (resolve, reject) => {
+        // find the player
+        let player = await playerRepository.findOne({
+          where: { playerId: stat.id },
+        });
+        // find the stats
+        let existingMatchStat = await matchStatRepository.findOne({
+          where: { playerIdFull: stat.id, matchIdFull: match.matchId },
+        });
+        // update the stat is it already exists
+        if (existingMatchStat) {
+          existingMatchStat.statsJSON = stat;
+          await matchStatRepository.save(existingMatchStat);
+          console.log(
+            `updated stats for: ${player.name} matchId: ${match.matchId}`,
+          );
+        } else {
+          // create new stat otherwise
+          await matchStatRepository.save({
+            matchIdFull: match.matchId,
+            playerIdFull: stat.id,
+            statsJSON: stat,
+            player: player,
+            match: match,
+          });
+          console.log(
+            `saved stats for: ${player.name} matchId: ${match.matchId}`,
+          );
+        }
+        resolve();
+      });
+    });
+    resolve();
+  });
+}

@@ -1,5 +1,6 @@
 import {Entity, PrimaryColumn, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn, OneToMany, ManyToMany, JoinTable} from "typeorm";
 import { YoutubeVideo } from "./YoutubeVideo";
+import { MatchStat } from "./MatchStat";
 
 @Entity()
 export class Player {
@@ -48,4 +49,7 @@ export class Player {
 
     @ManyToMany(type => YoutubeVideo, youtubevideos => youtubevideos.player)
     youtubevideos: YoutubeVideo[];
+
+    @OneToMany(type => MatchStat, matchStats => matchStats.player)
+    matchStats: MatchStat[];
 }
