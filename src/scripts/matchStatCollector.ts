@@ -13,7 +13,7 @@ async function matchStatCollector(
         const existingMatch = await matchRepository.findOne({
           where: { matchId: game.gameId },
         });
-        console.log(existingMatch);
+        // console.log(existingMatch);
         // if match exists and has started
         if (existingMatch && existingMatch.statusNum !== 1) {
           let result = await axios.get(
@@ -28,7 +28,7 @@ async function matchStatCollector(
           let awayTeamStats = statJSON.stats.visitor.players;
           await saveStats(
             existingMatch,
-            homeTeamStats,
+            [...homeTeamStats, ...awayTeamStats],
             playerRepository,
             matchStatRepository,
           );
@@ -57,8 +57,8 @@ export default matchStatCollector;
 async function saveStats(match, stats, playerRepository, matchStatRepository) {
   return new Promise(async (resolve, reject) => {
     await forEachSeries(stats, async stat => {
-      console.log(stats);
-      console.log(stat);
+      // console.log(stats);
+      // console.log(stat);
       return new Promise(async (resolve, reject) => {
         // find the player
         let player = await playerRepository.findOne({

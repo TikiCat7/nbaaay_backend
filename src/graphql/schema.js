@@ -151,7 +151,7 @@ const resolvers = {
           match.hTeamName = hTeamName.short;
           match.vTeamName = vTeamName.short;
         }
-        console.log(matches);
+        // console.log(matches);
       } catch(error) {
         return error;
       }

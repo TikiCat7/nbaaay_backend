@@ -26,6 +26,6 @@ export class MatchStat {
 
     @AfterUpdate()
     updateCounters() {
-      console.log('something got updated');
+      // console.log('something got updated');
     }
 }
