@@ -15,6 +15,7 @@ import { Streamable } from './entity/Streamable';
 import { Player } from './entity/Player';
 import { Test } from './entity/Test';
 const moment = require('moment');
+const cors = require('cors');
 
 // create typeorm connection
 createConnection({
@@ -61,6 +62,7 @@ createConnection({
   // create and setup express app
   const app = express();
   app.use(bodyParser.json());
+  app.use(cors())
 
   // register routes
   app.get('/allMatches', async function(req: Request, res: Response) {
