@@ -19,10 +19,12 @@ async function mainLoop(connection, dateFormatted, dateFormattedYesterday, date)
 
     // MLG Highlights
     await findAndSaveYoutubeVideos(matchRepository, youtubeVideoRepository, playerRepository, dateFormatted, 'UCoh_z6QB0AGB1oxWufvbDUg');
-    // Ximo Pierto
-    await findAndSaveYoutubeVideos(matchRepository, youtubeVideoRepository, playerRepository, dateFormatted, 'UCcuuNqCH-CiHbvXihwTOGrA');
-    // Ximo Highlights
-    await findAndSaveYoutubeVideos(matchRepository, youtubeVideoRepository, playerRepository, dateFormatted, 'UCawKxKSbK4S3RQArUJHWb6w');
+    // NBA
+    await findAndSaveYoutubeVideos(matchRepository, youtubeVideoRepository, playerRepository, dateFormatted, 'UCWJ2lWNubArHWmf3FIHbfcQ');
+    // Ximo Pierto - deleted
+    // await findAndSaveYoutubeVideos(matchRepository, youtubeVideoRepository, playerRepository, dateFormatted, 'UCcuuNqCH-CiHbvXihwTOGrA');
+    // Ximo Highlights - deleted
+    // await findAndSaveYoutubeVideos(matchRepository, youtubeVideoRepository, playerRepository, dateFormatted, 'UCawKxKSbK4S3RQArUJHWb6w');
     // GD's Lastest Highlights
     await findAndSaveYoutubeVideos(matchRepository, youtubeVideoRepository, playerRepository, dateFormatted, 'UCd_EkHbEutirFl_XSrg95kA');
     // House of highlights

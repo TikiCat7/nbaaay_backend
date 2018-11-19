@@ -13,9 +13,8 @@ async function matchStatCollector(
         const existingMatch = await matchRepository.findOne({
           where: { matchId: game.gameId },
         });
-        // console.log(existingMatch);
-        // if match exists and has started
-        if (existingMatch && existingMatch.statusNum !== 1) {
+        // if match exists and has started and is not over
+        if (existingMatch && existingMatch.statusNum === 2) {
           let result = await axios.get(
             `https://nlnbamdnyc-a.akamaihd.net/fs/nba/feeds_s2012/stats/2018/boxscore/${
               game.gameId
