@@ -83,21 +83,21 @@ async function findGameThreads(recentMatches, matchRepository, startOfToday) {
   return new Promise(async(resolve, reject) => {
     let gameThreadsToCreate = [];
     let posts = await r.getSubreddit('nba').search({ sort: 'top', query: `GAME THREAD`, syntax: 'cloudsearch', time: 'day'});
-    console.log('----- retrieved list of posts with GAME THREAD query -----');
+    // console.log('----- retrieved list of posts with GAME THREAD query -----');
     if (posts.length > 0) {
       await forEachSeries(posts, async(post, i) => {
-        console.log(post.title);
+        // console.log(post.title);
         if (post.link_flair_text === 'Game Thread') {
           // console.log(post)
           if (post.title.includes(`${startOfToday.format('MMMM DD, YYYY')}`) || post.title.includes(`${startOfToday.format('MMM D, YYYY')}`) || post.title.includes(`${startOfToday.format('MMM. D, YYYY')}`)  || post.title.includes(`${startOfToday.format('MMM. DD, YYYY')}`) || post.title.includes(`${startOfToday.format('MM DD , YYYY')}`)) {
-            console.log(' ---------- passed the title name test -----------');
-            console.log(post.url);
+            // console.log(' ---------- passed the title name test -----------');
+            // console.log(post.url);
             // console.log(post.title);
             const match = await figureOutWhatMatchItIs(post.title, startOfToday.format('YYYYMMDD'), matchRepository);
 
             // if match was found, create the thread record
             if (match) {
-              console.log('match was found against DB records');
+              // console.log('match was found against DB records');
               // console.log(match);
               let fullCommentsFromReddit = await post.expandReplies({ limit: 1, depth: 1 }).then(data => { return data.comments.toJSON() }).catch(error => console.log(error));
               let topComments = await post.expandReplies({ limit: 1, depth: 1 }).then(data => {
@@ -167,22 +167,22 @@ async function findPostGameThreads(matchRepository, postGameThreadRepository) {
   return new Promise(async(resolve,reject) => {
     const finishedMatches = await matchRepository.find({where: { statusNum : 3}});
     let postGameThreads = await r.getSubreddit('nba').search({ sort: 'new', query: `Post Game Thread`, syntax: 'cloudsearch', time: 'day'});
-    console.log('----- retrieved list of posts with POST GAME THREAD query -----');
+    // console.log('----- retrieved list of posts with POST GAME THREAD query -----');
     await forEachSeries(finishedMatches, async match => {
       // console.log(moment().diff(moment(match.endTimeUTC), 'hours'));
       if (moment().diff(moment(match.endTimeUTC), 'hours') > 12) {
         // console.log('6 hours+ since game ended');
       } else {
-        console.log('hasnt been 12 hours since game');
+        // console.log('hasnt been 12 hours since game');
         const hTeamName = TRI_CODE_TO_TEAM_NAME[match.hTeamTriCode];
         const vTeamName = TRI_CODE_TO_TEAM_NAME[match.vTeamTriCode];
-        console.log(`hteam name according to match record: ${hTeamName}`);
-        console.log(`vteam name according to match record: ${vTeamName}`);
+        // console.log(`hteam name according to match record: ${hTeamName}`);
+        // console.log(`vteam name according to match record: ${vTeamName}`);
 
         for (let i =0; i<postGameThreads.length; i++) {
           // TODO: consider case of multiple threads being created when game ends, figure out how to determine which one is the correct one
           if (postGameThreads[i].title.includes(hTeamName) && postGameThreads[i].title.includes(vTeamName)) {
-            console.log(`Found a post game thread: ${postGameThreads[i].title}`);
+            // console.log(`Found a post game thread: ${postGameThreads[i].title}`);
             let fullCommentsFromReddit = await postGameThreads[i].expandReplies({ limit: 1, depth: 1 }).then(data => { return data.comments.toJSON() }).catch(error => console.log(error));
             let topComments = await postGameThreads[i].expandReplies({ limit: 1, depth: 1 }).then(data => {
               return data.comments.toJSON().map(topPost => {
@@ -197,7 +197,7 @@ async function findPostGameThreads(matchRepository, postGameThreadRepository) {
               });
             }).catch(error => console.log(error));
             await savePostGameThreadOrUpdate(postGameThreads[i], fullCommentsFromReddit, topComments, match.id, match.matchId, postGameThreadRepository, matchRepository);
-            console.log('done saving to db');
+            // console.log('done saving to db');
           }
         }
       }

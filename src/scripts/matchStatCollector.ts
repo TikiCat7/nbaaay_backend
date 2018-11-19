@@ -21,8 +21,6 @@ async function matchStatCollector(
             }.js`,
           );
           let statJSON = JSON.parse(result.data.split('var g_boxscore=')[1]);
-          console.log('game to be updated');
-          console.log(game.gameId);
           let homeTeamStats = statJSON.stats.home.players;
           let awayTeamStats = statJSON.stats.visitor.players;
           await saveStats(
@@ -56,8 +54,6 @@ export default matchStatCollector;
 async function saveStats(match, stats, playerRepository, matchStatRepository) {
   return new Promise(async (resolve, reject) => {
     await forEachSeries(stats, async stat => {
-      // console.log(stats);
-      // console.log(stat);
       return new Promise(async (resolve, reject) => {
         // find the player
         let player = await playerRepository.findOne({
@@ -71,9 +67,9 @@ async function saveStats(match, stats, playerRepository, matchStatRepository) {
         if (existingMatchStat) {
           existingMatchStat.statsJSON = stat;
           await matchStatRepository.save(existingMatchStat);
-          console.log(
-            `updated stats for: ${player.name} matchId: ${match.matchId}`,
-          );
+          // console.log(
+          //   `updated stats for: ${player.name} matchId: ${match.matchId}`,
+          // );
         } else {
           // create new stat otherwise
           await matchStatRepository.save({
@@ -83,9 +79,9 @@ async function saveStats(match, stats, playerRepository, matchStatRepository) {
             player: player,
             match: match,
           });
-          console.log(
-            `saved stats for: ${player.name} matchId: ${match.matchId}`,
-          );
+          // console.log(
+          //   `saved stats for: ${player.name} matchId: ${match.matchId}`,
+          // );
         }
         resolve();
       });

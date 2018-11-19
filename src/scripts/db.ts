@@ -34,21 +34,17 @@ async function saveMatchesOrUpdate(games, matchRepository) {
         console.log(error);
       }
     } else if (existingMatch && existingMatch.statusNum === 3) {
-      console.log('----------------HERE------------------');
       existingMatch.endTimeUTC = game.endTimeUTC;
       existingMatch.isGameActivated = game.isGameActivated;
-      console.log(game.hTeam.linescore);
-      console.log(game.vTeam.linescore);
-      console.log(game.period);
       existingMatch.currentPeriod = game.period.current;
       existingMatch.periodType = game.period.type;
       existingMatch.maxRegular = game.period.maxRegular;
       existingMatch.isHalfTime = game.period.isHalftime;
       existingMatch.isEndOfPeriod = game.period.isEndOfPeriod;
       //if match already exists as status 3, game is over, dont do anything
-      console.log('match exists and is already statusNum 3, so nothing to do');
+      // console.log('match exists and is already statusNum 3, so nothing to do');
       try {
-        console.log('here but not actually saving');
+        // console.log('here but not actually saving');
         await matchRepository.save(existingMatch);
       } catch(error) {
         console.log(error);
@@ -56,10 +52,10 @@ async function saveMatchesOrUpdate(games, matchRepository) {
       return;
     // if match doesn't exist, create a record
     } else {
-      console.log('match doesnt exist, creating new record now...');
-      console.log(game.startTimeUTC);
-      console.log('----------------------------------');
-      console.log(game);
+      // console.log('match doesnt exist, creating new record now...');
+      // console.log(game.startTimeUTC);
+      // console.log('----------------------------------');
+      // console.log(game);
       const match = {
         matchId: game.gameId,
         startDateEastern: game.startDateEastern,
@@ -126,7 +122,7 @@ async function saveGameThreads(gameThreads, matchRepository, threadRepository) {
   await forEachSeries(gameThreads, async(game) => {
       const gameThreadToUpdate = await threadRepository.findOne({where: {postId: game.gameThread.id}})
       if (gameThreadToUpdate) {
-        console.log(`game thread ${game.gameThread.title} was found, updating record now...`);
+        // console.log(`game thread ${game.gameThread.title} was found, updating record now...`);
         gameThreadToUpdate.author = await game.gameThread.author.name;
         gameThreadToUpdate.created = game.gameThread.created_utc;
         gameThreadToUpdate.down = parseInt(game.gameThread.downs);
@@ -146,8 +142,8 @@ async function saveGameThreads(gameThreads, matchRepository, threadRepository) {
           console.log(error);
         }
       } else {
-        console.log(`game thread ${game.gameThread.id} was not found, creating new record now & updating match record link`);
-        console.log(game.gameThread);
+        // console.log(`game thread ${game.gameThread.id} was not found, creating new record now & updating match record link`);
+        // console.log(game.gameThread);
         let gameThread = new Thread();
         gameThread.author = await game.gameThread.author.name;
         gameThread.created = game.gameThread.created_utc;
@@ -172,11 +168,11 @@ async function saveGameThreads(gameThreads, matchRepository, threadRepository) {
 }
 
 async function savePostGameThreadOrUpdate(targetThread, fullCommentsFromReddit, topComments, id, matchId, postGameThreadRepository, matchRepository) {
-  console.log(`goign to save ${targetThread.title}`);
+  // console.log(`goign to save ${targetThread.title}`);
   const postGameThread = await postGameThreadRepository.findOne({where: {postId: targetThread.id}});
   if (postGameThread) {
     // already exists, update it since its still < 12 hours
-    console.log(`post game thread ${postGameThread.title} was found, updating record now...`);
+    // console.log(`post game thread ${postGameThread.title} was found, updating record now...`);
     postGameThread.author = await targetThread.author.name;
     postGameThread.created = targetThread.created_utc;
     postGameThread.down = parseInt(targetThread.downs);
@@ -197,7 +193,7 @@ async function savePostGameThreadOrUpdate(targetThread, fullCommentsFromReddit, 
     }
   } else {
     // doesn't exist, need to create
-    console.log('doesnt exist');
+    // console.log('doesnt exist');
     let threadToSave = new PostGameThread();
     threadToSave.author = await targetThread.author.name;
     threadToSave.created = targetThread.created_utc;
