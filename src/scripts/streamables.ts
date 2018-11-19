@@ -19,9 +19,9 @@ const { forEachSeries, forEach } = require('p-iteration');
 
 async function findStreamablePosts(date: Date, r: any) {
   try {
-    let newPosts = await r.getSubreddit('nba').search({ sort: 'new', time: 'day', query: 'streamable' });
-    let hotPosts = await r.getSubreddit('nba').search({ sort: 'hot', time: 'day', query: 'streamable' });
-    let topPosts = await r.getSubreddit('nba').search({ sort: 'top', time: 'day', query: 'streamable' });
+    let topPosts = await r.getSubreddit('nba').getTop();
+    let hotPosts = await r.getSubreddit('nba').getHot();
+    let newPosts = await r.getSubreddit('nba').getNew();
     let streamablePosts = [];
     newPosts.forEach((post) => {
       if(post.url.includes('streamable')) {
