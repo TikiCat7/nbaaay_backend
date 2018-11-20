@@ -125,6 +125,7 @@ const resolvers = {
       match.hTeamName = hTeamName.short;
       match.vTeamName = vTeamName.short;
 
+      matches.sort((a,b) => a.startTimeUTC > b.startTimeUTC ? 1 : -1);
       return match;
     },
     matchByDate: async (_, { date }, { matchrepository }) => {
