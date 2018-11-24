@@ -45,9 +45,10 @@ async function mainLoop(connection, dateFormatted, dateFormattedYesterday, date)
     // await grabPlayerNames(playerRepository);
     // MATCHES / THREADS / POST GAME THREADS
     const todaysMatches = await findTodayMatches(dateFormatted);
+    console.log('todays matches found: ', todaysMatches.length);
     if (todaysMatches.length > 0) {
-      await matchStatCollector(todaysMatches, matchRepository, matchStatRepository, playerRepository);
       await saveMatchesOrUpdate(todaysMatches, matchRepository);
+      await matchStatCollector(todaysMatches, matchRepository, matchStatRepository, playerRepository);
       console.log('match record save/update complete');
 
       const { notStarted, active, over, overRecent } = await checkGameStatus(todaysMatches);

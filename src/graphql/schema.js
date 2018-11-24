@@ -125,7 +125,6 @@ const resolvers = {
       match.hTeamName = hTeamName.short;
       match.vTeamName = vTeamName.short;
 
-      matches.sort((a,b) => a.startTimeUTC > b.startTimeUTC ? 1 : -1);
       return match;
     },
     matchByDate: async (_, { date }, { matchrepository }) => {
@@ -152,6 +151,11 @@ const resolvers = {
           match.hTeamName = hTeamName.short;
           match.vTeamName = vTeamName.short;
         }
+        console.log('here');
+        
+        matches.sort((a,b) => a.statusNum === 2 ? -1 : 1);
+        matches.sort((a,b) => a.statusNum === 3 ? -1 : 1);
+        matches.sort((a,b) => a.statusNum === 1 && a.startTimeUTC > b.startTimeUTC ? 1 : -1);
         // console.log(matches);
       } catch(error) {
         return error;
