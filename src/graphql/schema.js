@@ -161,7 +161,7 @@ const resolvers = {
       } catch(error) {
         return error;
       }
-      return [...status3Sorted, ...status2Sorted, ...status1Sorted]
+      return [...status2Sorted, ...status3Sorted, ...status1Sorted]
     }
   },
   Mutation: {
