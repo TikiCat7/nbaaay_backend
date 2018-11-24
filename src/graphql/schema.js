@@ -22,6 +22,7 @@ const typeDefs = gql`
     startDateEastern: String
     startTimeUTCString: String
     startTimeUTC: String
+    endTimeUTC: String
     hTeamId: String
     hTeamTriCode: String
     hTeamName: String
@@ -151,16 +152,16 @@ const resolvers = {
           match.hTeamName = hTeamName.short;
           match.vTeamName = vTeamName.short;
         }
-        console.log('here');
-        
-        matches.sort((a,b) => a.statusNum === 2 ? -1 : 1);
-        matches.sort((a,b) => a.statusNum === 3 ? -1 : 1);
-        matches.sort((a,b) => a.statusNum === 1 && a.startTimeUTC > b.startTimeUTC ? 1 : -1);
-        // console.log(matches);
+        let status3 = matches.filter((a) => a.statusNum === 3);
+        let status2 = matches.filter((a) => a.statusNum === 2);
+        let status1 = matches.filter((a) => a.statusNum === 1 );
+        let status3Sorted = status3.sort((a,b) => a.endTimeUTC > b.endTimeUTC ? -1 : 1);
+        let status2Sorted = status2.sort((a,b) => a.endTimeUTC > b.endTimeUTC ? -1 : 1);
+        let status1Sorted = status1.sort((a,b) => a.startTimeUTC < b.startTimeUTC ? -1 : 1);
       } catch(error) {
         return error;
       }
-      return matches;
+      return [...status3Sorted, ...status2Sorted, ...status1Sorted]
     }
   },
   Mutation: {
