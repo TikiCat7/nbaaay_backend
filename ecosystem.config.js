@@ -51,7 +51,7 @@ module.exports = {
       key: '~/.ssh/nbaaay.pem',
       ref: 'origin/master',
       repo: 'git@github.com:WataruKay/nbaaay_backend.git',
-      path: '/home/ubuntu/nbaaay',
+      path: '/home/nbaaay',
       'post-deploy': postDeployProduction(),
     }
   }
