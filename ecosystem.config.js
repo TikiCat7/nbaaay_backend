@@ -46,12 +46,12 @@ module.exports = {
       'post-deploy': postDeployProduction(),
     },
     api: {
-      user: 'ec2-user',
-      host: 'ec2-13-59-158-201.us-east-2.compute.amazonaws.com',
+      user: 'ubuntu',
+      host: 'ec2-18-191-168-87.us-east-2.compute.amazonaws.com',
       key: '~/.ssh/nbaaay.pem',
       ref: 'origin/master',
       repo: 'git@github.com:WataruKay/nbaaay_backend.git',
-      path: '/home/nbaaay',
+      path: '/home/ubuntu/nbaaay',
       'post-deploy': postDeployProduction(),
     }
   }
