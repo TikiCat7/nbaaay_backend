@@ -56,6 +56,8 @@ createConnection({
     resolvers,
     context: {
       matchrepository: matchrepository,
+      streamableRepository: streamableRepository,
+      youtubeVideoRepository: youtubeVideoRepository,
     },
   });
 
@@ -89,7 +91,7 @@ createConnection({
           .where({ startDateEastern: req.params.date })
           .leftJoinAndSelect('match.youtubevideos', 'video')
           .leftJoinAndSelect('match.thread', 'thread')
-          .leftJoinAndSelect('match.matchstats', 'matchStat')
+          .leftJoinAndSelect('match.matchStats', 'matchStat')
           .leftJoinAndSelect('matchStat.player', 'playerForMatchStat')
           .addSelect('thread.fullCommentsFromReddit')
           .addSelect('thread.topComments')
@@ -100,7 +102,7 @@ createConnection({
       } else {
         matches = await matchrepository.find({
           where: { startDateEastern: req.params.date },
-          relations: ['thread', 'postGameThread', 'youtubevideos'],
+          relations: ['thread', 'postGameThread', 'youtubevideos', 'matchStats'],
         });
       }
       res.send(matches);
@@ -272,11 +274,12 @@ createConnection({
       const requestDate = moment(req.params.date, 'YYYYMMDD')
         .startOf('day')
         .unix();
+      console.log(requestDate);
       const requestEndDate = moment(req.params.date, 'YYYYMMDD')
         .startOf('day')
         .add(1, 'day')
         .unix();
-      console.log(requestDate);
+      console.log(requestEndDate);
       const streamable = await streamableRepository
         .createQueryBuilder('streamable')
         .where('streamable.created > :requestDate', { requestDate })

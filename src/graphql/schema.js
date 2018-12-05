@@ -1,5 +1,6 @@
 const { gql } = require('apollo-server');
 import GraphQLJSON from 'graphql-type-json';
+const moment = require('moment');
 const teams = require('../scripts/teamId');
 
 // The GraphQL schema
@@ -13,6 +14,10 @@ const typeDefs = gql`
     match(matchId: String): Match
     "All matches for a specific day"
     matchByDate(date: String): [Match]
+    "All streamables for a specific day"
+    streamableByDate(date: String): [Streamable]
+    "A youtube video"
+    Video(matchId: String): [Video]
   }
 
   type Match {
@@ -38,7 +43,7 @@ const typeDefs = gql`
     vTeamWins: String
     vTeamLosses: String
     vTeamScore: String
-    vTeamQScore: JSON 
+    vTeamQScore: JSON
     youtubevideos: [Video]
     matchStats: [MatchStat]
     statusNum: Int
@@ -69,7 +74,7 @@ const typeDefs = gql`
   }
 
   type Player {
-    id: ID,
+    id: ID
     name: String
     firstName: String
     lastName: String
@@ -86,12 +91,24 @@ const typeDefs = gql`
   }
 
   type MatchStat {
-    id: ID,
-    matchIdFull: String,
-    playerIdFull: String,
-    statsJSON: JSON,
-    player: Player,
-    match: [Match],
+    id: ID
+    matchIdFull: String
+    playerIdFull: String
+    statsJSON: JSON
+    player: Player
+    match: [Match]
+  }
+
+  type Streamable {
+    id: ID
+    title: String
+    created: String
+    createdISODate: String
+    postId: String
+    numComments: Int
+    score: Int
+    author: String
+    url: String
   }
 
   type Mutation {
@@ -104,6 +121,11 @@ const typeDefs = gql`
 const resolvers = {
   Query: {
     hello: () => 'world',
+    Video: async (_, args, { youtubeVideoRepository }) => {
+      console.log(_, args, youtubeVideoRepository);
+      let videos = await youtubeVideoRepository.find({where: { matchId: args.matchId }});
+      return videos;
+    },
     match: async (_, { matchId }, { matchrepository }) => {
       let match = await matchrepository
         .createQueryBuilder('match')
@@ -132,14 +154,14 @@ const resolvers = {
       let matches;
       try {
         matches = await matchrepository
-        .createQueryBuilder('match')
-        .where({ startDateEastern: date })
-        .leftJoinAndSelect('match.youtubevideos', 'video')
-        .leftJoinAndSelect('video.player', 'player')
-        .leftJoinAndSelect('match.matchStats', 'matchStat')
-        .leftJoinAndSelect('matchStat.player', 'playerForMatchStat')
-        .getMany();
-        for(let match of matches) {
+          .createQueryBuilder('match')
+          .where({ startDateEastern: date })
+          .leftJoinAndSelect('match.youtubevideos', 'video')
+          .leftJoinAndSelect('video.player', 'player')
+          .leftJoinAndSelect('match.matchStats', 'matchStat')
+          .leftJoinAndSelect('matchStat.player', 'playerForMatchStat')
+          .getMany();
+        for (let match of matches) {
           // extra data manipulation for frontend
           let hTeamRecordFormatted = match.hTeamWins + '-' + match.hTeamLosses;
           let vTeamRecordFormatted = match.vTeamWins + '-' + match.vTeamLosses;
@@ -152,32 +174,63 @@ const resolvers = {
           match.hTeamName = hTeamName.short;
           match.vTeamName = vTeamName.short;
         }
-        let status3 = matches.filter((a) => a.statusNum === 3);
-        let status2 = matches.filter((a) => a.statusNum === 2);
-        let status1 = matches.filter((a) => a.statusNum === 1 );
-        let status3Sorted = status3.sort((a,b) => a.endTimeUTC > b.endTimeUTC ? -1 : 1);
-        let status2Sorted = status2.sort((a,b) => a.endTimeUTC > b.endTimeUTC ? -1 : 1);
-        let status1Sorted = status1.sort((a,b) => a.startTimeUTC < b.startTimeUTC ? -1 : 1);
-      } catch(error) {
+        let status3 = matches.filter(a => a.statusNum === 3);
+        let status2 = matches.filter(a => a.statusNum === 2);
+        let status1 = matches.filter(a => a.statusNum === 1);
+        let status3Sorted = status3.sort((a, b) =>
+          a.endTimeUTC > b.endTimeUTC ? -1 : 1,
+        );
+        let status2Sorted = status2.sort((a, b) =>
+          a.endTimeUTC > b.endTimeUTC ? -1 : 1,
+        );
+        let status1Sorted = status1.sort((a, b) =>
+          a.startTimeUTC < b.startTimeUTC ? -1 : 1,
+        );
+      } catch (error) {
         return error;
       }
-      return [...status2Sorted, ...status3Sorted, ...status1Sorted]
-    }
+      return [...status2Sorted, ...status3Sorted, ...status1Sorted];
+    },
+    streamableByDate: async (_, { date }, { streamableRepository }) => {
+      try {
+        const requestDate = moment(date, 'YYYYMMDD')
+          .startOf('day')
+          .unix();
+        const requestEndDate = moment(date, 'YYYYMMDD')
+          .startOf('day')
+          .add(1, 'day')
+          .unix();
+        const streamables = await streamableRepository
+          .createQueryBuilder('streamable')
+          .where('streamable.created > :requestDate', { requestDate })
+          .andWhere('streamable.created < :requestEndDate', { requestEndDate })
+          .getMany();
+      } catch (error) {
+        return error;
+      }
+      return streamables;
+    },
   },
   Mutation: {
-    updateMatch: async ( _, { matchId, updatedMatchObject }, { matchrepository }) => {
+    updateMatch: async (
+      _,
+      { matchId, updatedMatchObject },
+      { matchrepository },
+    ) => {
       try {
-        const existingMatch = await matchrepository.findOne({where: {matchId: matchId}});
+        const existingMatch = await matchrepository.findOne({
+          where: { matchId: matchId },
+        });
         console.log('match exists, updating now...');
         existingMatch.hTeamScore = '399';
         let updatedMatch = await matchrepository.save(existingMatch);
         return updatedMatch;
-      } catch(error) {
+      } catch (error) {
         console.log('could not update', error);
       }
-    }
-  }
-}  
+    },
+  },
+};
 
 module.exports = {
   typeDefs,
