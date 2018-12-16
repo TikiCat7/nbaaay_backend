@@ -17,7 +17,9 @@ const typeDefs = gql`
     "All streamables for a specific day"
     streamableByDate(date: String): [Streamable]
     "A youtube video"
-    Video(matchId: String): [Video]
+    Video(matchId: String): [Video],
+    "Returns a players recent 5 game performance, with stats and videos for each match"
+    playerRecentPerformanceQuery(date: String, id: String): [MatchStat]
   }
 
   type Match {
@@ -96,7 +98,7 @@ const typeDefs = gql`
     playerIdFull: String
     statsJSON: JSON
     player: Player
-    match: [Match]
+    match: Match
   }
 
   type Streamable {
@@ -209,6 +211,25 @@ const resolvers = {
         return error;
       }
       return streamables;
+    },
+    playerRecentPerformanceQuery: async (_, { date, id }, { matchStatRepository, playerRepository, matchrepository, youtubeVideoRepository }) => {
+      try {
+        console.log(`got params: ${date}, ${id}...`);
+        let recentMatchStats = await matchStatRepository
+        .createQueryBuilder('matchStat')
+          .where({ playerIdFull: id })
+          .leftJoinAndSelect('matchStat.player', 'player')
+          .leftJoinAndSelect('matchStat.match', 'match')
+          .leftJoinAndSelect('match.youtubevideos', 'video')
+          .leftJoinAndSelect('video.player', 'videoPlayer')
+          .orderBy("matchStat.id", "DESC")
+          .take(5)
+          .getMany();
+        
+        return recentMatchStats;
+      } catch(error) {
+        return error;
+      }
     },
   },
   Mutation: {

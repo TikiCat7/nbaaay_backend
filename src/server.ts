@@ -14,6 +14,7 @@ import { YoutubeVideo } from './entity/YoutubeVideo';
 import { Streamable } from './entity/Streamable';
 import { Player } from './entity/Player';
 import { Test } from './entity/Test';
+import { MatchStat } from './entity/MatchStat';
 const moment = require('moment');
 const cors = require('cors');
 
@@ -49,6 +50,8 @@ createConnection({
   const streamableRepository = connection.getRepository(Streamable);
   const testRepository = connection.getRepository(Test);
   const playerRepository = connection.getRepository(Player);
+  const matchStatRepository = connection.getRepository(MatchStat);
+
 
   const server = new ApolloServer({
     // These will be defined for both new or existing servers
@@ -58,6 +61,7 @@ createConnection({
       matchrepository: matchrepository,
       streamableRepository: streamableRepository,
       youtubeVideoRepository: youtubeVideoRepository,
+      matchStatRepository: matchStatRepository,
     },
   });
 
@@ -333,11 +337,11 @@ createConnection({
     try {
       console.log(`got request for player ${req.params.id}`);
 
-      const player = await connection
-        .getRepository(Player)
+      const player = await playerRepository
         .createQueryBuilder('player')
         .where('player.id = :playerId', { playerId: req.params.id })
         .leftJoinAndSelect('player.youtubevideos', 'youtubeVideoId')
+        .leftJoinAndSelect('player.matchStats', 'matchStat')
         .getOne();
 
       // let player = await playerRepository.find({where: {id: req.params.id}, relations: ["youtubevideos"]});
