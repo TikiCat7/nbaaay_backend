@@ -19,7 +19,7 @@ const typeDefs = gql`
     "A youtube video"
     Video(matchId: String): [Video],
     "Returns a players recent 5 game performance, with stats and videos for each match"
-    playerRecentPerformanceQuery(date: String, id: String): [MatchStat]
+    playerRecentPerformanceQuery(id: String, range: Int): [MatchStat]
   }
 
   type Match {
@@ -212,20 +212,32 @@ const resolvers = {
       }
       return streamables;
     },
-    playerRecentPerformanceQuery: async (_, { date, id }, { matchStatRepository, playerRepository, matchrepository, youtubeVideoRepository }) => {
+    playerRecentPerformanceQuery: async (_, { id, range }, { matchStatRepository, playerRepository, matchrepository, youtubeVideoRepository }) => {
       try {
-        console.log(`got params: ${date}, ${id}...`);
-        let recentMatchStats = await matchStatRepository
-        .createQueryBuilder('matchStat')
-          .where({ playerIdFull: id })
-          .leftJoinAndSelect('matchStat.player', 'player')
-          .leftJoinAndSelect('matchStat.match', 'match')
-          .leftJoinAndSelect('match.youtubevideos', 'video')
-          .leftJoinAndSelect('video.player', 'videoPlayer')
-          .orderBy("matchStat.id", "DESC")
-          .take(5)
-          .getMany();
-        
+        console.log(`got params: ${id}, ${range}...`);
+        let recentMatchStats;
+        if (range === 0) {
+          recentMatchStats = await matchStatRepository
+          .createQueryBuilder('matchStat')
+            .where({ playerIdFull: id })
+            .leftJoinAndSelect('matchStat.player', 'player')
+            .leftJoinAndSelect('matchStat.match', 'match')
+            .leftJoinAndSelect('match.youtubevideos', 'video')
+            .leftJoinAndSelect('video.player', 'videoPlayer')
+            .orderBy("matchStat.id", "DESC")
+            .getMany();
+        } else {
+          recentMatchStats = await matchStatRepository
+          .createQueryBuilder('matchStat')
+            .where({ playerIdFull: id })
+            .leftJoinAndSelect('matchStat.player', 'player')
+            .leftJoinAndSelect('matchStat.match', 'match')
+            .leftJoinAndSelect('match.youtubevideos', 'video')
+            .leftJoinAndSelect('video.player', 'videoPlayer')
+            .orderBy("matchStat.id", "DESC")
+            .take(range)
+            .getMany();
+        }
         for (let match of recentMatchStats) {
           // extra data manipulation for frontend
           let hTeamRecordFormatted = match.match.hTeamWins + '-' + match.match.hTeamLosses;
