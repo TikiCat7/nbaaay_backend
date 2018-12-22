@@ -226,6 +226,20 @@ const resolvers = {
           .take(5)
           .getMany();
         
+        for (let match of recentMatchStats) {
+          // extra data manipulation for frontend
+          let hTeamRecordFormatted = match.match.hTeamWins + '-' + match.match.hTeamLosses;
+          let vTeamRecordFormatted = match.match.vTeamWins + '-' + match.match.vTeamLosses;
+
+          let hTeamName = teams.find(team => team.tri === match.match.hTeamTriCode);
+          let vTeamName = teams.find(team => team.tri === match.match.vTeamTriCode);
+
+          match.match.hTeamRecordFormatted = hTeamRecordFormatted;
+          match.match.vTeamRecordFormatted = vTeamRecordFormatted;
+          match.match.hTeamName = hTeamName.short;
+          match.match.vTeamName = vTeamName.short;
+        }
+        
         return recentMatchStats;
       } catch(error) {
         return error;
